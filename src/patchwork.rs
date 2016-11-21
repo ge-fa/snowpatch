@@ -108,7 +108,7 @@ pub struct Series {
     pub patches: Vec<String>
 }
 
-#[derive(Serialize, Clone)]
+#[derive(Serialize, Clone, PartialEq)]
 pub enum TestState {
     #[serde(rename = "pending")]
     Pending,
