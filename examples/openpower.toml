@@ -56,6 +56,7 @@ token = "33333333333333333333333333333333"
         remote = "GIT_REPO_TO_USE"
         branch = "GIT_REF_TO_BUILD"
         artifact = "snowpatch.txt"
+        hefty = true
         USER_EMAIL = "username"
         DEFCONFIG_TO_USE = "pseries_le_defconfig"
 
@@ -64,5 +65,6 @@ token = "33333333333333333333333333333333"
         remote = "GIT_REPO_TO_USE"
         branch = "GIT_REF_TO_BUILD"
         artifact = "snowpatch.txt"
+        hefty = false
         USER_EMAIL = "username"
         DEFCONFIG_TO_USE = "ppc64le_defconfig"
