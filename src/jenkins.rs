@@ -148,7 +148,7 @@ impl JenkinsBackend {
             None => None,
             Some(result) => match result { // TODO: Improve this...
                 "SUCCESS" => Some(TestState::success),
-                "FAILURE" => Some(TestState::failure),
+                "FAILURE" => Some(TestState::fail),
                 "UNSTABLE" => Some(TestState::warning),
                 _ => Some(TestState::pending),
             },
