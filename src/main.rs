@@ -120,7 +120,7 @@ fn run_tests(settings: &Config, client: Arc<Client>, project: &Project, tag: &st
             debug!("Param name {}, value {}", &param_name, &param_value);
             match param_name.as_ref() {
                 // TODO: Validate special parameter names in config at start of program
-                "job" | "title" | "hefty" => { },
+                "job" | "title" | "hefty" | "warn_on_fail" => { },
                 "remote" => jenkins_params.push((param_value, &project.remote_uri)),
                 "branch" => jenkins_params.push((param_value, tag)),
                 _ => jenkins_params.push((param_name, param_value)),
@@ -140,7 +140,11 @@ fn run_tests(settings: &Config, client: Arc<Client>, project: &Project, tag: &st
         }
         debug!("Build URL: {}", build_url_real);
         jenkins.wait_build(&build_url_real);
-        let test_result = jenkins.get_build_result(&build_url_real).unwrap();
+        let mut test_result = jenkins.get_build_result(&build_url_real).unwrap();
+        if test_result == TestState::fail &&
+            settings::job_should_warn_on_fail(job_params) {
+                test_result = TestState::warning;
+        }
         info!("Jenkins job for {}/{} complete.", branch_name, job_title);
         results.push(TestResult {
             state: test_result,
