@@ -413,6 +413,11 @@ fn main() {
                     continue;
                 },
                 Some(project) => {
+                    debug!("Project has required category {}",
+                           project.clone().category.unwrap_or("nope".to_string()));
+                    if project.category.is_some() && !patch.has_category(project.clone().category.unwrap()) {
+                        continue;
+                    }
                     // TODO(ajd): Refactor this.
                     let hefty_tests;
                     let mbox = if patch.has_series() {

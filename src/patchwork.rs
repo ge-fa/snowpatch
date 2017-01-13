@@ -78,7 +78,8 @@ pub struct Patch {
     pub series: Vec<String>,
     pub check: String, // TODO enum of possible states
     pub checks: String,
-    pub tags: BTreeMap<String, u64>
+    pub tags: BTreeMap<String, u64>,
+    pub categories: Vec<String>
 }
 
 impl Patch {
@@ -88,6 +89,16 @@ impl Patch {
 
     pub fn action_required(&self) -> bool {
         &self.state == "new" || &self.state == "under-review"
+    }
+
+    pub fn has_category(&self, category: String) -> bool {
+        for cat in &self.categories {
+            debug!("Comparing category {} to {}", cat.to_string(), category);
+            if cat.to_string() == category {
+                return true
+            }
+        }
+        false
     }
 }
 

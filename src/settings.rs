@@ -63,6 +63,7 @@ pub struct Project {
     pub remote_uri: String,
     pub jobs: Vec<Job>,
     pub push_results: bool,
+    pub category: Option<String>,
 }
 
 impl Project {
