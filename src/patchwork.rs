@@ -53,7 +53,7 @@ pub struct Project {
     pub web_url: Option<String>,
     pub scm_url: Option<String>,
     pub webscm_url: Option<String>,
-    pub maintainers: Vec<String>
+//    pub maintainers: Vec<String>
 }
 
 // /api/1.0/patches/
@@ -63,7 +63,7 @@ pub struct Project {
 pub struct Patch {
     pub id: u64,
     pub url: String,
-    pub project: String,
+    pub project: Project,
     pub msgid: String,
     pub date: String,
     pub name: String,
@@ -72,14 +72,14 @@ pub struct Patch {
     pub state: String, // TODO enum of possible states
     pub archived: bool,
     pub hash: Option<String>,
-    pub submitter: String,
+//    pub submitter: String,
     pub delegate: Option<String>,
     pub mbox: String,
-    pub series: Vec<String>,
+    pub series: Vec<SeriesSummary>,
     pub check: String, // TODO enum of possible states
     pub checks: String,
     pub tags: BTreeMap<String, u64>,
-    pub categories: Vec<String>
+//    pub categories: Vec<String>
 }
 
 impl Patch {
@@ -91,13 +91,14 @@ impl Patch {
         &self.state == "new" || &self.state == "under-review"
     }
 
+    #[allow(warnings)]
     pub fn has_category(&self, category: String) -> bool {
-        for cat in &self.categories {
-            debug!("Comparing category {} to {}", cat.to_string(), category);
-            if cat.to_string() == category {
-                return true
-            }
-        }
+//        for cat in &self.categories {
+//            debug!("Comparing category {} to {}", cat.to_string(), category);
+//            if cat.to_string() == category {
+//                return true
+//            }
+//        }
         false
     }
 }
@@ -117,6 +118,16 @@ pub struct Series {
     pub received_all: bool,
     pub cover_letter: Option<String>,
     pub patches: Vec<String>
+}
+
+#[derive(Deserialize, Clone)]
+pub struct SeriesSummary {
+    pub id: u64,
+    pub url: String,
+    pub date: String,
+    pub name: String,
+    pub version: u64,
+    pub mbox: String,
 }
 
 #[derive(Serialize, Clone, PartialEq)]
@@ -257,7 +268,7 @@ impl PatchworkServer {
     pub fn get_patch_dependencies(&self, patch: &Patch) -> Vec<Patch> {
         // We assume the list of patches in a series are in order.
         let mut dependencies: Vec<Patch> = vec!();
-        let series = self.get_series_by_url(&patch.series[0]);
+        let series = self.get_series_by_url(&patch.series[0].url);
         if series.is_err() {
             return dependencies;
         }

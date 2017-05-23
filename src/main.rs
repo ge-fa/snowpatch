@@ -339,9 +339,8 @@ fn main() {
     if args.flag_patch > 0 {
         info!("snowpatch is testing a patch from Patchwork.");
         let patch = patchwork.get_patch(&(args.flag_patch as u64)).unwrap();
-        let project = patchwork.get_project(&patch.project).unwrap();
-        match settings.projects.get(&project.link_name) {
-            None => panic!("Couldn't find project {}", &project.link_name),
+        match settings.projects.get(&patch.project.link_name) {
+            None => panic!("Couldn't find project {}", &patch.project.link_name),
             Some(project) => {
                 let mbox = if patch.has_series() {
                     let dependencies = patchwork.get_patch_dependencies(&patch);
@@ -361,7 +360,7 @@ fn main() {
         // The last patch in the series, so its dependencies are the whole series
         let patch = patchwork.get_patch_by_url(series.patches.last().unwrap()).unwrap();
         // We have to do it this way since there's no project field on Series
-        let project = patchwork.get_project(&patch.project).unwrap();
+        let project = patchwork.get_project(&patch.project.name).unwrap();
         match settings.projects.get(&project.link_name) {
             None => panic!("Couldn't find project {}", &project.link_name),
             Some(project) => {
@@ -398,18 +397,18 @@ fn main() {
                 continue;
             }
 
-            let project = patchwork.get_project(&patch.project).unwrap();
+            //let project = patchwork.get_project(&patch.project).unwrap();
             // Skip if we're using -p and it's the wrong project
-            if args.flag_project != "" && project.link_name != args.flag_project {
+            if args.flag_project != "" && patch.project.link_name != args.flag_project {
                 debug!("Skipping patch {} ({}) (wrong project: {})",
-                       patch.name, patch.id, project.link_name);
+                       patch.name, patch.id, patch.project.link_name);
                 continue;
             }
 
-            match settings.projects.get(&project.link_name) {
+            match settings.projects.get(&patch.project.link_name) {
                 None => {
                     debug!("Project {} not configured for patch {}",
-                           &project.link_name, patch.name);
+                           &patch.project.link_name, patch.name);
                     continue;
                 },
                 Some(project) => {
@@ -421,8 +420,8 @@ fn main() {
                     // TODO(ajd): Refactor this.
                     let hefty_tests;
                     let mbox = if patch.has_series() {
-                        debug!("Patch {} has a series at {}!", &patch.name, &patch.series[0]);
-                        let series = patchwork.get_series_by_url(&patch.series[0]);
+                        debug!("Patch {} has a series at {}!", &patch.name, &patch.series[0].url);
+                        let series = patchwork.get_series_by_url(&patch.series[0].url);
                         if series.is_ok() {
                             let series = series.unwrap();
                             if !series.received_all {
