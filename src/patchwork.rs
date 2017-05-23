@@ -125,7 +125,7 @@ pub struct SeriesSummary {
     pub id: u64,
     pub url: String,
     pub date: String,
-    pub name: String,
+    pub name: Option<String>,
     pub version: u64,
     pub mbox: String,
 }
